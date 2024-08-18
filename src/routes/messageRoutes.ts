@@ -5,29 +5,38 @@ import Message from '../models/message';
 
 const router = express.Router();
 
-router.post('/messages', async (req, res) => {
+// Route to fetch messages with senderId and receiverId as query parameters
+router.get('/messages', async (req, res) => {
   try {
-    const { senderId, receiverId, text } = req.body;
-   // const message = await Message.create({ senderId, receiverId, text });
-   // res.json(message);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to send message' });
-  }
-});
+    const senderId = parseInt(req.query.senderId as string, 10);
+    const receiverId = parseInt(req.query.receiverId as string, 10);
 
-router.get('/messages/:userId', async (req, res) => {
-  try {
-    const userId = parseInt(req.params.userId);
+    // Validate senderId and receiverId
+    if (isNaN(senderId) || isNaN(receiverId)) {
+      return res.status(400).json({ error: 'Invalid senderId or receiverId' });
+    }
+
+    // Fetch messages where senderId and receiverId match either direction
     const messages = await Message.findAll({
       where: {
         [Op.or]: [
-          { senderId: userId },
-          { receiverId: userId },
+          {
+            senderId: senderId,
+            receiverId: receiverId,
+          },
+          {
+            senderId: receiverId,
+            receiverId: senderId,
+          },
         ],
       },
+      order: [['createdAt', 'ASC']], // Order messages by creation date
     });
+
+    // Return the messages as JSON
     res.json(messages);
   } catch (error) {
+    // Handle any errors during the fetch operation
     res.status(500).json({ error: 'Failed to fetch messages' });
   }
 });

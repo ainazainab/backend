@@ -2,10 +2,8 @@ import { Model, DataTypes, Optional } from 'sequelize';
 import { sequelize } from './index'; 
 import User from './user';
 
-
 interface MessageAttributes {
   id: number;
-  privateRoomId: number;
   senderId: number;
   receiverId: number;
   text: string;
@@ -15,7 +13,6 @@ interface MessageCreationAttributes extends Optional<MessageAttributes, 'id'> {}
 
 class Message extends Model<MessageAttributes, MessageCreationAttributes> implements MessageAttributes {
   public id!: number;
-  public privateRoomId!: number;
   public senderId!: number;
   public receiverId!: number;
   public text!: string;
@@ -29,10 +26,6 @@ Message.init({
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
-  },
-  privateRoomId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
   },
   senderId: {
     type: DataTypes.INTEGER,
@@ -53,7 +46,7 @@ Message.init({
   underscored: true,
 });
 
-Message.belongsTo(PrivateRoom, { foreignKey: 'privateRoomId' });
+// Remove association with PrivateRoom
 Message.belongsTo(User, { as: 'Sender', foreignKey: 'senderId' });
 Message.belongsTo(User, { as: 'Receiver', foreignKey: 'receiverId' });
 

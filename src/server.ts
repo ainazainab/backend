@@ -1,13 +1,14 @@
 import express from 'express';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
 import * as dotenv from 'dotenv';
 import { sequelize } from './models'; 
 import userRoutes from './routes/userRoutes';
 import authRoutes from './routes/authRoutes';
-import { Socket } from 'socket.io';
-import authenticateToken from './middleware/authMiddleware';
 import registerRoutes from './routes/registerRoutes';
+import authenticateToken from './middleware/authMiddleware';
+import Message from './models/message'; // Ensure Message model is imported
+import messageRoutes from './routes/messageRoutes';
 
 // Initialize environment variables
 dotenv.config();
@@ -20,7 +21,7 @@ app.use(cors());
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: '*', // Consider specifying origins
     methods: ['GET', 'POST'],
   },
 });
@@ -29,33 +30,48 @@ const io = new Server(server, {
 app.use(express.json());
 app.use('/api', registerRoutes); // User routes sign up 
 app.use('/api', authRoutes); // Authentication routes login
-app.use('/api', authenticateToken, userRoutes); //get users
-
-
+app.use('/api', authenticateToken, userRoutes); // get users
+app.use('/api', authenticateToken, messageRoutes);  // Use the message routes with authentication
 
 // Dictionary to keep track of connected users
 const connectedUsers: { [key: string]: Socket } = {};
 
 io.on('connection', (socket) => {
   const userId = socket.handshake.query.userId as string; // Extract userId from query
-  const username = socket.handshake.query.displayName;
+  const username = socket.handshake.query.displayName as string;
 
   if (userId) {
-    console.log('User connected:', userId, username);
+    console.log('User connected:', userId);
     connectedUsers[userId] = socket;
     io.emit('users', Object.keys(connectedUsers)); // Broadcast updated user list
+    console.log('Active users emitted:', Object.keys(connectedUsers));
   }
 
   socket.on('send_message', async (message) => {
     const [sender, receiver, text] = JSON.parse(message);
-    console.log('Message received:', { sender, receiver, text });
 
-    const receiverSocket = connectedUsers[receiver];
-    if (receiverSocket) {
-      receiverSocket.emit('message', `${sender} sent: ${text}`);
+    try {
+      console.log('Message saved:', { sender, receiver, text });
+
+      // Emit the message to the receiver
+      const receiverSocket = connectedUsers[receiver];
+      if (receiverSocket) {
+        receiverSocket.emit('message', { sender, text });
+      }
+
+
+    // Save the message to the database
+      await Message.create({
+        senderId: parseInt(sender, 10),
+        receiverId: parseInt(receiver, 10),
+        text: text,
+      });
+
+    } catch (error) {
+      console.error('Error saving message:', error);
     }
   });
-
+  
   socket.on('disconnect', () => {
     const userId = Object.keys(connectedUsers).find(key => connectedUsers[key].id === socket.id);
     if (userId) {
@@ -79,7 +95,7 @@ sequelize.authenticate()
       console.log(`Server is running on port ${PORT}`);
     });
   })
-  .catch((error: any) => {
+  .catch((error) => {
     console.error('Unable to connect to the database:', error);
   });
 
