@@ -1,0 +1,9 @@
+{
+  "development": {
+      "username": "chat_user",
+      "password": "123",
+      "database": "chatter_db",
+      "host": "localhost",
+      "dialect": "postgres"
+  }
+}
