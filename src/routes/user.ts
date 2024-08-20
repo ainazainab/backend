@@ -1,12 +1,12 @@
 // src/routes/userRoutes.ts
 
 import express from 'express';
-import { getUsers } from '../controllers/userController';
-import authenticateToken from '../middleware/authMiddleware';
+import { getUsers } from '../controllers/user';
+import authenticateToken from '../middleware/auth';
 
 const router = express.Router();
 
 // GET /users - Retrieve all users (Protected route)
-router.get('/users', authenticateToken, getUsers);
+router.get('/', authenticateToken, getUsers);
 
 export default router;

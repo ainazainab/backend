@@ -1,7 +1,7 @@
 // src/controllers/userController.ts
 
 import { Request, Response } from 'express';
-import UserService from '../services/userService';
+import UserService from '../services/user';
 
 export const getUsers = async (req: Request, res: Response) => {
   console.log("Incoming request:", req.headers); // Log headers
@@ -12,11 +12,6 @@ export const getUsers = async (req: Request, res: Response) => {
     res.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
-
-    if (error instanceof Error) {
-      return res.status(500).json({ error: error.message });
-    }
-
-    res.status(500).json({ error: 'Failed to fetch users' });
+    res.status(500).json({ error });
   }
 };

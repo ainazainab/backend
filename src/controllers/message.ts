@@ -1,7 +1,7 @@
 // src/controllers/messageController.ts
 
 import { Request, Response } from 'express';
-import MessageService from '../services/messageService';
+import MessageService from '../services/message';
 
 export const getMessages = async (req: Request, res: Response) => {
   try {
@@ -17,11 +17,6 @@ export const getMessages = async (req: Request, res: Response) => {
     res.json(messages);
   } catch (error) {
     console.error('Error fetching messages:', error);
-
-    if (error instanceof Error) {
-      return res.status(500).json({ error: error.message });
-    }
-
-    res.status(500).json({ error: 'Failed to fetch messages' });
+    res.status(500).json({ error });
   }
 };

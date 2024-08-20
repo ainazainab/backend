@@ -1,10 +1,16 @@
-// src/services/authService.ts
-
 import User from '../models/user';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
+interface CreateUserInput {
+  username: string;
+  email: string;
+  display_name: string;
+  password: string;
+}
+
 class AuthService {
+  // Method to handle user login
   public async login(username: string, password: string) {
     const user = await User.findOne({ where: { username } });
 
@@ -24,6 +30,27 @@ class AuthService {
     });
 
     return { token, user: { id: user.id, username: user.username, displayName: user.display_name } };
+  }
+
+  // Method to handle user registration (previously in RegisterService)
+  public async createUser({ username, email, display_name, password }: CreateUserInput) {
+    try {
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create a new user
+      const newUser = await User.create({
+        username,
+        email,
+        display_name,
+        password: hashedPassword,
+      });
+
+      return newUser.toJSON();
+    } catch (error) {
+      console.error('Error in AuthService - createUser:', error);
+      throw new Error('Failed to create user');
+    }
   }
 }
 
