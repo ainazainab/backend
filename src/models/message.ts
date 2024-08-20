@@ -1,13 +1,8 @@
 import { Model, DataTypes, Optional } from 'sequelize';
 import { sequelize } from './index'; 
 import User from './user';
+import { MessageAttributes } from '../interfaces/IMessage';
 
-interface MessageAttributes {
-  id: number;
-  senderId: number;
-  receiverId: number;
-  text: string;
-}
 
 interface MessageCreationAttributes extends Optional<MessageAttributes, 'id'> {}
 
