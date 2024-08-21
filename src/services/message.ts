@@ -1,5 +1,3 @@
-// src/services/messageService.ts
-
 import { Op } from 'sequelize';
 import Message from '../models/message';
 

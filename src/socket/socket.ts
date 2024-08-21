@@ -15,23 +15,23 @@ export const socketHandler = (io: Server) => {
     }
 
     socket.on('send_message', async (message) => {
-      const [sender, receiver, text] = JSON.parse(message);
+      const [sender, receiver, text, createdAt] = JSON.parse(message); // Include createdAt
 
       try {
-        
-        // Emit the message to the receiver
+        // Emit the message to the receiver with the timestamp
         const receiverSocket = connectedUsers[receiver];
         if (receiverSocket) {
-          receiverSocket.emit('message', { sender, text });
+          receiverSocket.emit('message', { sender, text, createdAt }); // Include createdAt when emitting the message
         }
         
-        // Save the message to the database
+        // Save the message to the database with the timestamp
         await Message.create({
           senderId: parseInt(sender, 10),
           receiverId: parseInt(receiver, 10),
           text: text,
+          //createdAt: new Date(createdAt), // Ensure this is stored correctly
         });
-        console.log('Message saved:', { sender, receiver, text });
+        console.log('Message saved:', { sender, receiver, text, createdAt });
         
       } catch (error) {
         console.error('Error saving message:', error);

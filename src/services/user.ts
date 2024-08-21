@@ -1,5 +1,3 @@
-// src/services/userService.ts
-
 import User from '../models/user';
 
 class UserService {
@@ -7,8 +5,8 @@ class UserService {
     try {
       const users = await User.findAll({
         attributes: [
-          ['id', 'id'], // Alias id as id
-          ['display_name', 'displayName'] // Alias display_name as displayName
+          ['id', 'id'], 
+          ['display_name', 'displayName'] 
         ]
       });
       return users;

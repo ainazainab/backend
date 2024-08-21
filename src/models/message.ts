@@ -1,12 +1,9 @@
-import { Model, DataTypes, Optional } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import { sequelize } from './index'; 
 import User from './user';
 import { MessageAttributes } from '../interfaces/IMessage';
 
-
-interface MessageCreationAttributes extends Optional<MessageAttributes, 'id'> {}
-
-class Message extends Model<MessageAttributes, MessageCreationAttributes> implements MessageAttributes {
+class Message extends Model<MessageAttributes> implements MessageAttributes {
   public id!: number;
   public senderId!: number;
   public receiverId!: number;
@@ -41,7 +38,6 @@ Message.init({
   underscored: true,
 });
 
-// Remove association with PrivateRoom
 Message.belongsTo(User, { as: 'Sender', foreignKey: 'senderId' });
 Message.belongsTo(User, { as: 'Receiver', foreignKey: 'receiverId' });
 

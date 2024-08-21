@@ -1,11 +1,8 @@
-import { Model, DataTypes, Optional } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import { sequelize } from './index'; 
 import { UserAttributes } from '../interfaces/IUser';
 
-
-interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
-
-class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
+class User extends Model<UserAttributes> implements UserAttributes {
   public id!: number;
   public email!: string;
   public username!: string;

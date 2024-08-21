@@ -1,5 +1,3 @@
-// src/controllers/messageController.ts
-
 import { Request, Response } from 'express';
 import MessageService from '../services/message';
 

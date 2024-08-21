@@ -1,5 +1,3 @@
-// src/routes/userRoutes.ts
-
 import express from 'express';
 import { getUsers } from '../controllers/user';
 import authenticateToken from '../middleware/auth';

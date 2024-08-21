@@ -1,13 +1,7 @@
 import User from '../models/user';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
-interface CreateUserInput {
-  username: string;
-  email: string;
-  display_name: string;
-  password: string;
-}
+import { CreateUserInput } from '../interfaces/ICreateUser';
 
 class AuthService {
   // Method to handle user login

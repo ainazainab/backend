@@ -1,5 +1,3 @@
-//src/services/index.ts
-
 export { default as AuthService} from './auth';
 
 export { default as MessageService} from './message';
